@@ -1,0 +1,2 @@
+thue phong
+-tao 1 contract voi status voi trang thai NOT_READY, voi 1
