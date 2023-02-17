@@ -1,6 +1,6 @@
 package com.example.ql_phong_tro.model.entity;
 
-import com.example.ql_phong_tro.model.enumDescription.StatusContract;
+import com.example.ql_phong_tro.model.enums.StatusContract;
 import lombok.Getter;
 import lombok.Setter;
 

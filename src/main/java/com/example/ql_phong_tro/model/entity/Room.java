@@ -1,6 +1,6 @@
 package com.example.ql_phong_tro.model.entity;
 
-import com.example.ql_phong_tro.model.enumDescription.StatusRoom;
+import com.example.ql_phong_tro.model.enums.StatusRoom;
 
 import lombok.Getter;
 import lombok.Setter;

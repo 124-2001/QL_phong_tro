@@ -3,7 +3,7 @@ package com.example.ql_phong_tro.model.DTO;
 import com.example.ql_phong_tro.model.entity.LandLord;
 import com.example.ql_phong_tro.model.entity.Renter;
 import com.example.ql_phong_tro.model.entity.Type;
-import com.example.ql_phong_tro.model.enumDescription.StatusRoom;
+import com.example.ql_phong_tro.model.enums.StatusRoom;
 import com.sun.istack.NotNull;
 import lombok.Data;
 

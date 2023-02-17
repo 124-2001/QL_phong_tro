@@ -1,10 +1,13 @@
 package com.example.ql_phong_tro.service;
 
+import com.example.ql_phong_tro.exception.NotFoundException;
 import com.example.ql_phong_tro.model.DTO.ContractDTO;
 import com.example.ql_phong_tro.model.entity.Contract;
 import com.example.ql_phong_tro.model.entity.LandLord;
 import com.example.ql_phong_tro.model.entity.Renter;
-import com.example.ql_phong_tro.model.enumDescription.StatusRoom;
+import com.example.ql_phong_tro.model.entity.Room;
+import com.example.ql_phong_tro.model.enums.StatusContract;
+import com.example.ql_phong_tro.model.enums.StatusRoom;
 import com.example.ql_phong_tro.repository.ContractRepository;
 import com.example.ql_phong_tro.repository.LandLordRepository;
 import com.example.ql_phong_tro.repository.RenterRepository;
@@ -48,16 +51,22 @@ public class ContractSevice {
         }
         else {
             Renter renterNew = mapper.map(contractDTO.getRenterDTO(),Renter.class);
-            contract.setRenter(renterNew);
+            if(renterNew.getRoom()!=null){
+                throw new NotFoundException("Nguoi thue da co nha thue roi");
+            }
+            else {
+                contract.setRenter(renterNew);
+            }
         }
         Optional<LandLord> landLord = landLordRepository.findByPhone(contractDTO.getLandLordDTO().getPhone());
         if(landLord.isPresent()){
             contract.setLandLord(landLord.get());
-            if(roomRepository.findById(contractDTO.getRoomDTO().getId()).get().getLandLord().getId()==landLord.get().getId()&&roomRepository.findById(contractDTO.getRoomDTO().getId()).get().getStatusRoom()== StatusRoom.AVAILABLE){
+            if(roomRepository.findById(contractDTO.getRoomDTO().getId()).get().getLandLord().getId()==landLord.get().getId()
+                    &&roomRepository.findById(contractDTO.getRoomDTO().getId()).get().getStatusRoom()== StatusRoom.AVAILABLE){
                 contract.setRoom(roomRepository.findById(contractDTO.getRoomDTO().getId()).get());
             }
             else {
-                throw new RuntimeException("Chu phong khong co phong nay hoac da full");
+                throw new NotFoundException("Chu phong khong co phong nay hoac da full");
             }
         }
         else {
@@ -73,7 +82,37 @@ public class ContractSevice {
         calendar.add(Calendar.MONTH, 6);
         currentDate = calendar.getTime();
         contract.setTimeEnd(currentDate);
+        contract.setStatusContract(StatusContract.START);
         contractRepository.save(contract);
+        return contract;
+    }
+
+    public void changeStatusContract(Contract contract){
+        Date currentDate = new Date(System.currentTimeMillis());
+        if(currentDate==contract.getTimeEnd()){
+            contract.setStatusContract(StatusContract.END);
+            contractRepository.save(contract);
+        }
+    }
+
+    @Transactional
+    public Contract deleteContract(Contract contract){
+        if(!contractRepository.findById(contract.getId()).isPresent()){
+            throw new NotFoundException("Hop dong khong ton tai");
+        }
+        else {
+            changeStatusContract(contract);
+            if(contract.getStatusContract()== StatusContract.START){
+                throw  new NotFoundException("Hop dong chua het han, Chua di duoc dau :))");
+            }
+            else {
+                Renter renter = contract.getRenter();
+                renter.setRoom(null);
+                Room room = contract.getRoom();
+                room.setStatusRoom(StatusRoom.AVAILABLE);
+                contractRepository.delete(contract);
+            }
+        }
         return contract;
     }
 

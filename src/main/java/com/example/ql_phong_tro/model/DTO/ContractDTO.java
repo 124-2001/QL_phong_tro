@@ -1,7 +1,6 @@
 package com.example.ql_phong_tro.model.DTO;
 
-import com.example.ql_phong_tro.model.enumDescription.StatusContract;
-import com.fasterxml.jackson.databind.DatabindException;
+import com.example.ql_phong_tro.model.enums.StatusContract;
 import lombok.Data;
 
 import java.util.Date;
